@@ -109,13 +109,13 @@ function clearCart() {
   }
 }
 
-// 📤 إرسال الطلب
-function sendOrder() {
-  const tableNumber = prompt("يرجى إدخال رقم الطاولة:");
-  if (!tableNumber || cart.length === 0) {
-    alert("يرجى إدخال رقم الطاولة واختيار أصناف.");
-    return;
-  }
+// // 📤 إرسال الطلب
+// function sendOrder() {
+//   const tableNumber = prompt("يرجى إدخال رقم الطاولة:");
+//   if (!tableNumber || cart.length === 0) {
+//     alert("يرجى إدخال رقم الطاولة واختيار أصناف.");
+//     return;
+//   }
 
   cart.forEach((item) => {
     fetch(API_URL, {
