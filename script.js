@@ -53,6 +53,10 @@ async function renderMenu() {
     container.appendChild(group);
   }
 }
+function getTableNumberFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("table") || "غير معروف";
+}
 
 // ➕ أضف إلى السلة
 function addToCart(name, price) {
