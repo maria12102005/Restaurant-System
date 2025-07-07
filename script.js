@@ -1,162 +1,179 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwMa5-K4O7xe3QwRlIJZm5pfd5cSYnbyRbk3VOw95qCcztX3nagp7eG7TdkYL1Eh5Tf5Q/exec";
+  "https://script.google.com/macros/s/AKfycbzSKIU99xeEAVY-IUvGBZEuY6On_vgtmE-K0BP_mZqSZzwnKqCOe7SWy457TUsNKZUlXA/exec"; // ← بدلي برابطك الحقيقي
 let cart = [];
 
-// 🥗 عرض العروض
-async function renderOffers() {
-  const res = await fetch(`${API_URL}?sheet=offers`);
-  const offers = await res.json();
-  const container = document.getElementById("offers");
-  container.innerHTML = "";
-  offers.forEach((offer) => {
-    const card = document.createElement("div");
-    card.className = "offer";
-    card.innerHTML = `
-      <h3>${offer["العرض"]}</h3>
-      <p>${offer["التفاصيل"]}</p>
-      <p><strong>${offer["السعر"]} ل.س</strong></p>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// 🍽️ عرض القائمة حسب الأقسام
-async function renderMenu() {
-  const res = await fetch(`${API_URL}?sheet=menu`);
-  const items = await res.json();
-  const container = document.getElementById("menu");
-  container.innerHTML = "";
-
-  const sections = {};
-  items.forEach((item) => {
-    const section = item["القسم"];
-    if (!sections[section]) sections[section] = [];
-    sections[section].push(item);
-  });
-
-  for (const section in sections) {
-    const group = document.createElement("div");
-    group.innerHTML = `<h2>${section}</h2>`;
-
-    sections[section].forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "menu-item";
-      card.innerHTML = `
-        <h3>${item["الاسم"]}</h3>
-        <p>${item["الوصف"]}</p>
-        <p>${item["السعر"]} ل.س</p>
-        <button onclick="addToCart('${item["الاسم"]}', ${item["السعر"]})">🛒 إضافة للسلة</button>
-      `;
-      group.appendChild(card);
-    });
-
-    container.appendChild(group);
-  }
-}
 function getTableNumberFromURL() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("table") || "غير معروف";
+  return params.get("table") || sessionStorage.getItem("table") || "غير معروف";
 }
 
-// ➕ أضف إلى السلة
-function addToCart(name, price) {
-  const existing = cart.find((item) => item.name === name);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ name, price, qty: 1 });
-  }
+function saveManualTable() {
+  const val = document.getElementById("manualTable").value.trim();
+  if (!val) return alert("رجاءً أدخل رقم الطاولة");
+  sessionStorage.setItem("table", val);
+  location.reload();
+}
+
+function renderMenu() {
+  fetch(`${API_URL}?sheet=menu`)
+    .then((res) => res.json())
+    .then((items) => {
+      const menu = document.getElementById("menu");
+      menu.innerHTML = "";
+
+      const order = ["أطباق رئيسية", "مقبلات", "مشروبات", "أراكيل"];
+
+      order.forEach((sectionName, sectionIndex) => {
+        const sectionItems = items.filter((i) => i["القسم"] === sectionName);
+        if (!sectionItems.length) return;
+
+        const sectionDiv = document.createElement("div");
+        sectionDiv.style.marginTop = `${sectionIndex * 40}px`;
+        sectionDiv.innerHTML = `<h2>${sectionName}</h2>`;
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        sectionItems.forEach((item, index) => {
+          const qtyId = `qty-${sectionName}-${index}`;
+          const div = document.createElement("div");
+          div.className = "menu-item";
+          div.innerHTML = `
+            <strong>${item["الاسم"]}</strong>
+            <small>${item["الوصف"] || ""}</small>
+            <small>${item["السعر"]} ل.س</small>
+            <input type="number" id="${qtyId}" value="1" min="1" />
+            <button onclick="addToCart('${item["الاسم"]}', ${
+            item["السعر"]
+          }, '${qtyId}')">➕ أضف</button>
+          `;
+          grid.appendChild(div);
+        });
+
+        sectionDiv.appendChild(grid);
+        menu.appendChild(sectionDiv);
+      });
+    });
+}
+
+function renderOffers() {
+  fetch(`${API_URL}?sheet=offers`)
+    .then((res) => res.json())
+    .then((offers) => {
+      const box = document.getElementById("offers");
+      box.innerHTML = "";
+
+      offers.forEach((offer, index) => {
+        const qtyId = `offerQty-${index}`;
+        const div = document.createElement("div");
+        div.className = "offer-card";
+        div.innerHTML = `
+          <div class="offer-inner">
+            <div class="offer-front">🎁 ${offer["العرض"]}</div>
+            <div class="offer-back">
+              ${offer["التفاصيل"]}<br>
+              ${offer["السعر"]} ل.س<br>
+              <input type="number" id="${qtyId}" value="1" min="1" />
+              <button onclick="addToCart('${offer["العرض"]}', ${offer["السعر"]}, '${qtyId}')">➕ أضف</button>
+            </div>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    });
+}
+
+function addToCart(name, price, qtyId) {
+  const input = document.getElementById(qtyId);
+  const qty = parseInt(input.value || "1");
+  if (qty < 1) return;
+
+  const exist = cart.find((i) => i.name === name);
+  if (exist) exist.qty += qty;
+  else cart.push({ name, price, qty });
+
+  input.value = 1;
   updateCartUI();
 }
 
-// ➖ إزالة من السلة
-function removeFromCart(index) {
-  cart.splice(index, 1);
-  updateCartUI();
-}
-
-// 🧺 تحديث واجهة السلة
 function updateCartUI() {
-  const container = document.getElementById("cart");
-  container.innerHTML = "";
-
-  if (cart.length === 0) {
-    container.innerHTML = "<em>السلة فارغة</em>";
-    updateTotal();
+  const cartBox = document.getElementById("cart");
+  if (!cart.length) {
+    cartBox.innerHTML = "السلة فارغة";
+    document.getElementById("total").textContent = "الإجمالي: 0 ل.س";
     return;
   }
 
-  cart.forEach((item, index) => {
-    const row = document.createElement("div");
-    row.className = "cart-item";
-    row.innerHTML = `
-      ${item.qty} × ${item.name} – ${item.price * item.qty} ل.س
-      <button onclick="removeFromCart(${index})">❌</button>
-    `;
-    container.appendChild(row);
-  });
-
-  updateTotal();
-}
-
-// 💰 عرض المجموع
-function updateTotal() {
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  cartBox.innerHTML = cart
+    .map((i) => `<div>${i.qty} × ${i.name}</div>`)
+    .join("");
+  const subtotal = cart.reduce((t, i) => t + i.price * i.qty, 0);
+  const water = 1000;
+  const service = 2000;
+  const total = subtotal + water + service;
   document.getElementById("total").textContent = `الإجمالي: ${total} ل.س`;
 }
 
-// 🧼 زر لتفريغ السلة
 function clearCart() {
-  if (confirm("هل أنت متأكد من تفريغ السلة؟")) {
-    cart = [];
-    updateCartUI();
-  }
-}
-
-function sendOrder() {
-  const tableNumber = getTableNumberFromURL();
-  if (!tableNumber || cart.length === 0 || tableNumber === "غير معروف") {
-    alert("رقم الطاولة غير معروف أو السلة فارغة.");
-    return;
-  }
-  cart.forEach((item) => {
-    fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8",
-      },
-      body: JSON.stringify({
-        tableNumber,
-        item: item.name,
-        qty: item.qty,
-      }),
-    })
-      .then((res) => res.text())
-      .then((txt) => console.log("✅", txt))
-      .catch((err) => console.error("❌", err));
-  });
-
-  alert("🚀 تم إرسال الطلب!");
   cart = [];
   updateCartUI();
 }
 
-// 🔄 تحديث تلقائي من الشيت كل 60 ثانية
-setInterval(() => {
-  renderMenu();
-  renderOffers();
-  console.log("🔄 تم تحديث القائمة والعروض تلقائيًا");
-}, 60000);
+function sendOrder() {
+  const table = getTableNumberFromURL();
+  if (!cart.length || table === "غير معروف") {
+    alert("يرجى تعبئة السلة وإدخال رقم الطاولة");
+    return;
+  }
 
-// 🕒 آخر وقت تحديث (اختياري)
-setInterval(() => {
-  const t = new Date().toLocaleTimeString();
-  document.getElementById("last-updated").textContent = `آخر تحديث: ${t}`;
-}, 1000);
+  const now = new Date().toLocaleString("ar-EG");
+  const items = cart.map((i) => i.name).join("، ");
+  const quantities = cart.map((i) => i.qty).join("، ");
 
-// 🚀 عند تحميل الصفحة
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({
+  "رقم الطاولة": table,
+  "الصنف": items,
+  "الكمية": quantities,
+  "الوقت": now,
+  "الحالة": "قيد التحضير"
+})
+
+  })
+    .then(() => {
+      alert(`✅ تم إرسال الطلب من الطاولة ${table}`);
+      clearCart();
+    })
+    .catch((err) => {
+      console.error("❌ خطأ بالإرسال:", err);
+      alert("حدث خطأ، حاول لاحقًا");
+    });
+}
+
 window.onload = function () {
-  renderOffers();
+  const table = getTableNumberFromURL();
+
+  if (table === "غير معروف" && !window.location.search.includes("table")) {
+    // ✅ ما فيه QR → نطلب منو يحط رقم الطاولة
+    document.getElementById("tablePrompt").style.display = "block";
+    document.getElementById("tablePrompt").innerHTML = `
+      <h3>📍 رقم الطاولة</h3>
+      <input id="manualTable" placeholder="اكتب رقم الطاولة" />
+      <button onclick="saveManualTable()">✅ تأكيد</button>
+    `;
+  } else if (table !== "غير معروف") {
+    // ✅ فيه رقم طاولة، من QR أو محفوظ
+    sessionStorage.setItem("table", table);
+  }
+
   renderMenu();
+  renderOffers();
   updateCartUI();
 };
+
+// ✅ تحديث تلقائي كل دقيقة
+setInterval(() => {
+  renderMenu();
+  renderOffers();
+}, 60000);

@@ -1,32 +1,40 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>MIAMI MENU</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>🍽️ مطعم MIAMI</h1>
-    <small id="last-updated">آخر تحديث: الآن</small>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مطعم MIAMI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-    <section id="offers-section">
-      <h2>🔥 العروض الخاصة</h2>
-      <div id="offers"></div>
-    </section>
+  <h1>🍽️ مطعم MIAMI</h1>
 
-    <section id="menu-section">
-      <h2>📋 القائمة</h2>
-      <div id="menu"></div>
-    </section>
+  <!-- ✅ عرض إدخال رقم الطاولة إذا ما اجا من QR -->
+  <section id="tablePrompt" style="display:none;"></section>
 
-    <section id="cart-section">
-      <h2>🛒 السلة</h2>
-      <div id="cart"><em>السلة فارغة</em></div>
-      <p id="total">الإجمالي: 0 ل.س</p>
-      <button onclick="clearCart()">🧹 تفريغ السلة</button>
-      <button onclick="sendOrder()">📦 تأكيد الطلب</button>
-    </section>
+  <!-- ✅ العروض -->
+  <section>
+    <h2>🎁 العروض</h2>
+    <div id="offers" class="grid"></div>
+  </section>
 
-    <script src="script.js"></script>
-  </body>
+  <!-- ✅ القائمة -->
+  <section>
+    <h2>📋 القائمة</h2>
+    <div id="menu"></div>
+  </section>
+
+  <!-- ✅ السلة -->
+  <section class="cart">
+    <h2>🛒 السلة</h2>
+    <div id="cart">السلة فارغة</div>
+    <p id="total">الإجمالي: 0 ل.س</p>
+    <small>💡 السعر لا يشمل الماء وخدمة الطاولة</small><br/>
+    <button onclick="clearCart()">🧹 تفريغ</button>
+    <button onclick="sendOrder()">📦 تأكيد الطلب</button>
+  </section>
+
+  <script src="script.js"></script>
+</body>
 </html>

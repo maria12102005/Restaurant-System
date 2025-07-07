@@ -1,53 +1,117 @@
 body {
-  font-family: sans-serif;
+  background: linear-gradient(135deg, #fffadc, #a4dd00);
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
   padding: 20px;
-  background: #fdfdfd;
+  direction: rtl;
 }
 
-.menu-item,
-.offer,
-.cart-item {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 6px;
-  background: #fff;
-}
-
-button {
-  background: #008060;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  cursor: pointer;
-  border-radius: 4px;
+h1 {
+  text-align: center;
+  color: #98cd00;
 }
 
 h2 {
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 5px;
-  margin-top: 30px;
-  color: #333;
-}
-
-#cart {
-  background: #f9f9f9;
+  background: #b6f500;
   padding: 10px;
+  border-radius: 8px;
+  color: white;
+  margin: 20px 0 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-.cart-item {
+.grid {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.menu-item,
+.offer-card {
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  width: 180px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  transition: transform 0.5s;
+  position: relative;
+  animation: float 2.5s ease-in-out infinite;
 }
 
-.cart-item button {
-  background: crimson;
-  margin-right: 10px;
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
-small {
-  display: block;
-  margin-bottom: 10px;
-  color: #555;
+.menu-item input {
+  width: 40px;
+  text-align: center;
+  margin: 5px;
+}
+
+button {
+  background: #98cd00;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover {
+  background: #b6f500;
+}
+
+.offer-card {
+  border-radius: 12px;
+  width: 220px;
+  height: 140px;
+  perspective: 1000px;
+}
+
+.offer-inner {
+  width: 100%;
+  height: 100%;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+.offer-card:hover .offer-inner {
+  transform: rotateY(180deg);
+}
+
+.offer-front,
+.offer-back {
+  backface-visibility: hidden;
+  background: #b6f500;
+  border-radius: 12px;
+  color: white;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
+}
+.offer-back {
+  background: #a4dd00;
+  transform: rotateY(180deg);
+}
+.cart {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  margin-top: 30px;
 }
