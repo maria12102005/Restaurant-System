@@ -115,9 +115,6 @@ function sendOrder() {
     alert("رقم الطاولة غير معروف أو السلة فارغة.");
     return;
   }
-
-  ...
-
   cart.forEach((item) => {
     fetch(API_URL, {
       method: "POST",
