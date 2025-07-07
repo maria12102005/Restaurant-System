@@ -2,43 +2,30 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مطعم MIAMI</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
+    <title>MIAMI MENU</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
-      <h1>🍽️ مطعم MIAMI</h1>
-      <p>أطلب بسهولة وسرعة – كل شي بكبسة زر</p>
-    </header>
+    <h1>🍽️ مطعم MIAMI</h1>
+    <small id="last-updated">آخر تحديث: الآن</small>
 
-    <section id="offersSection">
-      <h2>🎉 عروضنا</h2>
-      <div id="offersContainer" class="grid"></div>
+    <section id="offers-section">
+      <h2>🔥 العروض الخاصة</h2>
+      <div id="offers"></div>
     </section>
 
-    <section id="menuSection">
+    <section id="menu-section">
       <h2>📋 القائمة</h2>
-      <div id="menuContainer" class="grid"></div>
+      <div id="menu"></div>
     </section>
 
-    <section id="cartSection">
-      <h2>🧺 سلة الطلب</h2>
-      <ul id="cartList"></ul>
-      <p id="totalPrice">المجموع: 0 ل.س</p>
-      <input id="tableInput" type="text" placeholder="رقم الطاولة" required />
-      <button id="submitOrder">✅ تأكيد الطلب</button>
-      <p id="confirmationMessage" style="display:none; color: green;"></p>
-
+    <section id="cart-section">
+      <h2>🛒 السلة</h2>
+      <div id="cart"><em>السلة فارغة</em></div>
+      <p id="total">الإجمالي: 0 ل.س</p>
+      <button onclick="clearCart()">🧹 تفريغ السلة</button>
+      <button onclick="sendOrder()">📦 تأكيد الطلب</button>
     </section>
-
-    <footer>
-      <p>© 2025 مطعم MIAMI – برمجة ماريا ✨</p>
-    </footer>
 
     <script src="script.js"></script>
   </body>

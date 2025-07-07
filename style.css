@@ -1,111 +1,53 @@
 body {
-  font-family: "Cairo", sans-serif;
-  background-color: #fffefa;
-  color: #2e2e2e;
-  margin: 0;
-  direction: rtl;
-  text-align: center;
+  font-family: sans-serif;
+  padding: 20px;
+  background: #fdfdfd;
 }
 
-header {
-  background: linear-gradient(to left, #1a1a1a, #c49c57);
-  color: white;
-  padding: 2rem;
-}
-
-h1,
-h2 {
-  margin: 0.5rem 0 1.5rem;
-}
-
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.2rem;
-  padding: 1rem 2rem;
-}
-
-.card {
+.menu-item,
+.offer,
+.cart-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
   background: #fff;
-  border: 2px solid #ecd9b0;
-  border-radius: 14px;
-  padding: 1rem;
-  width: 240px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.07);
-  transition: transform 0.3s ease;
-}
-
-.card:hover {
-  transform: scale(1.04);
-}
-
-.card h3 {
-  color: #7b1f3c;
-  margin: 0.3rem 0;
-}
-
-.card p {
-  font-size: 0.95rem;
-  margin: 0.5rem 0;
-}
-
-.price {
-  color: #ba8e2c;
-  font-weight: bold;
-  display: block;
-  margin-top: 0.4rem;
-}
-
-.qty-controls {
-  margin-top: 0.7rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.6rem;
 }
 
 button {
-  cursor: pointer;
-  background: #7b1f3c;
+  background: #008060;
   color: white;
   border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: background 0.2s ease;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-button:hover {
-  background: #a6425a;
+h2 {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+  margin-top: 30px;
+  color: #333;
 }
 
-input[type="text"] {
-  padding: 0.6rem;
-  margin-top: 1rem;
-  width: 220px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-family: inherit;
+#cart {
+  background: #f9f9f9;
+  padding: 10px;
 }
 
-#cartSection {
-  background: #f7f3e9;
-  padding: 2rem;
-  margin-top: 2rem;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#cartList {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0;
+.cart-item button {
+  background: crimson;
+  margin-right: 10px;
 }
 
-footer {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: #f2ede1;
-  font-size: 0.9rem;
-  color: #7b1f3c;
+small {
+  display: block;
+  margin-bottom: 10px;
+  color: #555;
 }

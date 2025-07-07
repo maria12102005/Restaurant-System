@@ -1,88 +1,160 @@
-// ======================
-// بيانات الطلب
-// ======================
-let selectedItems = [];
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwMa5-K4O7xe3QwRlIJZm5pfd5cSYnbyRbk3VOw95qCcztX3nagp7eG7TdkYL1Eh5Tf5Q/exec";
+let cart = [];
 
-function addItem(name) {
-  const existingItem = selectedItems.find((item) => item.name === name);
-  if (existingItem) {
-    existingItem.qty += 1;
-  } else {
-    selectedItems.push({ name: name, qty: 1 });
-  }
-  updateCartUI();
-}
-
-function removeItem(name) {
-  const index = selectedItems.findIndex((item) => item.name === name);
-  if (index !== -1) {
-    selectedItems.splice(index, 1);
-  }
-  updateCartUI();
-}
-
-function updateCartUI() {
-  const cartList = document.getElementById("cart");
-  cartList.innerHTML = "";
-  selectedItems.forEach((item) => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} × ${item.qty}`;
-    cartList.appendChild(li);
+// 🥗 عرض العروض
+async function renderOffers() {
+  const res = await fetch(`${API_URL}?sheet=offers`);
+  const offers = await res.json();
+  const container = document.getElementById("offers");
+  container.innerHTML = "";
+  offers.forEach((offer) => {
+    const card = document.createElement("div");
+    card.className = "offer";
+    card.innerHTML = `
+      <h3>${offer["العرض"]}</h3>
+      <p>${offer["التفاصيل"]}</p>
+      <p><strong>${offer["السعر"]} ل.س</strong></p>
+    `;
+    container.appendChild(card);
   });
 }
 
-// ======================
-// الإرسال إلى Google Sheet عبر Sheetson
-// ======================
-function sendOrder(tableNumber, items) {
-  const SHEETSON_URL = "https://api.sheetson.com/v2/sheets/orders";
-  const API_KEY =
-    "Bearer _Fy2MfHB_rQe8fTAHFT1LOk6_ZaHPCedE3f0USxqC6jD5ViICKP1sk5G7ng";
+// 🍽️ عرض القائمة حسب الأقسام
+async function renderMenu() {
+  const res = await fetch(`${API_URL}?sheet=menu`);
+  const items = await res.json();
+  const container = document.getElementById("menu");
+  container.innerHTML = "";
 
-  if (!tableNumber || items.length === 0) {
-    alert("❗ يرجى إدخال رقم الطاولة واختيار عنصر واحد على الأقل");
+  const sections = {};
+  items.forEach((item) => {
+    const section = item["القسم"];
+    if (!sections[section]) sections[section] = [];
+    sections[section].push(item);
+  });
+
+  for (const section in sections) {
+    const group = document.createElement("div");
+    group.innerHTML = `<h2>${section}</h2>`;
+
+    sections[section].forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "menu-item";
+      card.innerHTML = `
+        <h3>${item["الاسم"]}</h3>
+        <p>${item["الوصف"]}</p>
+        <p>${item["السعر"]} ل.س</p>
+        <button onclick="addToCart('${item["الاسم"]}', ${item["السعر"]})">🛒 إضافة للسلة</button>
+      `;
+      group.appendChild(card);
+    });
+
+    container.appendChild(group);
+  }
+}
+
+// ➕ أضف إلى السلة
+function addToCart(name, price) {
+  const existing = cart.find((item) => item.name === name);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ name, price, qty: 1 });
+  }
+  updateCartUI();
+}
+
+// ➖ إزالة من السلة
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCartUI();
+}
+
+// 🧺 تحديث واجهة السلة
+function updateCartUI() {
+  const container = document.getElementById("cart");
+  container.innerHTML = "";
+
+  if (cart.length === 0) {
+    container.innerHTML = "<em>السلة فارغة</em>";
+    updateTotal();
     return;
   }
 
-  items.forEach((item) => {
-    fetch(SHEETSON_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: API_KEY,
-      },
-      body: JSON.stringify({
-        data: {
-          "رقم الطاولة": tableNumber,
-          الصنف: item.name,
-          الكمية: item.qty,
-          الوقت: new Date().toLocaleString("ar-SY"),
-          الحالة: "قيد التحضير",
-        },
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("فشل الإرسال");
-        console.log("✅ تم إرسال الطلب:", item.name);
-      })
-      .catch((err) => {
-        console.error("❌ خطأ أثناء الإرسال:", err);
-        alert("❌ حصل خطأ أثناء إرسال الطلب.");
-      });
+  cart.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      ${item.qty} × ${item.name} – ${item.price * item.qty} ل.س
+      <button onclick="removeFromCart(${index})">❌</button>
+    `;
+    container.appendChild(row);
   });
 
-  alert("✅ تم إرسال الطلب بنجاح!");
-  selectedItems = [];
-  updateCartUI();
-  document.getElementById("table-number").value = "";
+  updateTotal();
 }
 
-// ======================
-// زر التأكيد
-// ======================
-document.getElementById("submit-order").addEventListener("click", function () {
-  const tableNumber = document.getElementById("table-number").value.trim();
-  sendOrder(tableNumber, selectedItems);
-});
-document.getElementById("confirmationMessage").textContent = "✅ تم إرسال الطلب! شكراً لكم";
-document.getElementById("confirmationMessage").style.display = "block";
+// 💰 عرض المجموع
+function updateTotal() {
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  document.getElementById("total").textContent = `الإجمالي: ${total} ل.س`;
+}
+
+// 🧼 زر لتفريغ السلة
+function clearCart() {
+  if (confirm("هل أنت متأكد من تفريغ السلة؟")) {
+    cart = [];
+    updateCartUI();
+  }
+}
+
+// 📤 إرسال الطلب
+function sendOrder() {
+  const tableNumber = prompt("يرجى إدخال رقم الطاولة:");
+  if (!tableNumber || cart.length === 0) {
+    alert("يرجى إدخال رقم الطاولة واختيار أصناف.");
+    return;
+  }
+
+  cart.forEach((item) => {
+    fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify({
+        tableNumber,
+        item: item.name,
+        qty: item.qty,
+      }),
+    })
+      .then((res) => res.text())
+      .then((txt) => console.log("✅", txt))
+      .catch((err) => console.error("❌", err));
+  });
+
+  alert("🚀 تم إرسال الطلب!");
+  cart = [];
+  updateCartUI();
+}
+
+// 🔄 تحديث تلقائي من الشيت كل 60 ثانية
+setInterval(() => {
+  renderMenu();
+  renderOffers();
+  console.log("🔄 تم تحديث القائمة والعروض تلقائيًا");
+}, 60000);
+
+// 🕒 آخر وقت تحديث (اختياري)
+setInterval(() => {
+  const t = new Date().toLocaleTimeString();
+  document.getElementById("last-updated").textContent = `آخر تحديث: ${t}`;
+}, 1000);
+
+// 🚀 عند تحميل الصفحة
+window.onload = function () {
+  renderOffers();
+  renderMenu();
+  updateCartUI();
+};
