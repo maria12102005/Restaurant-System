@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzSKIU99xeEAVY-IUvGBZEuY6On_vgtmE-K0BP_mZqSZzwnKqCOe7SWy457TUsNKZUlXA/exec"; // ← بدلي برابطك الحقيقي
+  "https://script.google.com/macros/s/AKfycbz2ar7n-B1J39B-caEdy4bJkJ1BmK4VfqVKLuit3YWopHL8S0lPbCbmLS5MIh1YoKVhhg/exec"; // ← بدلي برابطك الحقيقي
 let cart = [];
 
 function getTableNumberFromURL() {
@@ -130,17 +130,16 @@ function sendOrder() {
   const quantities = cart.map((i) => i.qty).join("، ");
 
   fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-   body: JSON.stringify({
-  "رقم الطاولة": table,
-  "الصنف": items,
-  "الكمية": quantities,
-  "الوقت": now,
-  "الحالة": "قيد التحضير"
-})
-
+  method: "POST",
+  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify({
+    "رقم الطاولة": table,
+    "الصنف": items,
+    "الكمية": quantities,
+    "الوقت": now,
+    "الحالة": "قيد التحضير"
   })
+})
     .then(() => {
       alert(`✅ تم إرسال الطلب من الطاولة ${table}`);
       clearCart();
