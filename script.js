@@ -1,5 +1,5 @@
 // 🔗 رابط Google Apps Script الخاص بك مع doGet مفعل
-const API_BASE_URL = "https://script.google.com/macros/s/AKfycbwC287Ayt2nHUFh8KBug5pvF6J_CQn_xyNMUz-aCOcLSPfui7_DhRFjek8fnCCwSIAuwA/exec";
+const API_BASE_URL ="https://script.google.com/macros/s/AKfycbwLDj9TpcbUTBxo8L-NU7MaIDFmNGw7RNd_ikAYcTSMbJxpFLL1JlFqtqrjo8kZRz_GmA/exec";
 
 // ✅ جلب بيانات قائمة الطعام (menu)
 function renderMenu() {
