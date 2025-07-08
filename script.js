@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbz2ar7n-B1J39B-caEdy4bJkJ1BmK4VfqVKLuit3YWopHL8S0lPbCbmLS5MIh1YoKVhhg/exec"; // ← بدلي برابطك الحقيقي
+  "https://script.google.com/macros/s/AKfycbz5ilRMnFfAN8q9n7W8NeDgHtn3mhqGxQ6qRm5h_wYyF_yxHRefM_FiuPIVAkUSyvU5Dw/exec"; // ← بدلي برابطك الحقيقي
 let cart = [];
 
 function getTableNumberFromURL() {
@@ -131,7 +131,9 @@ function sendOrder() {
 
   fetch(API_URL, {
   method: "POST",
-  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8" // ✅ ضروري لتجنّب preflight
+  },
   body: JSON.stringify({
     "رقم الطاولة": table,
     "الصنف": items,
@@ -140,6 +142,7 @@ function sendOrder() {
     "الحالة": "قيد التحضير"
   })
 })
+
     .then(() => {
       alert(`✅ تم إرسال الطلب من الطاولة ${table}`);
       clearCart();
