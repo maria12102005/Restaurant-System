@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyA_WgWyNFAgZGihb15oBERWGydvf5QZDUJqMAHTBF-A1QABWZp7fqXSZhewjvEObkJQw/exec"; // ← بدلي برابطك الحقيقي
+  "https://script.google.com/macros/s/AKfycbxNgSKbLOqyzlYeKZgRzAhF8Gi2xl9cF4sHNCGsnRKbAfqhT3xAl-SIQpJvS8B11nJNrw/exec"; // ← بدلي برابطك الحقيقي
 let cart = [];
 
 function getTableNumberFromURL() {
